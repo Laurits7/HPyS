@@ -1,0 +1,107 @@
+# Default configuration of the HPS tau builder (FCC-ee settings).
+# Defaults follow the CMS HPS algorithm (JINST 13 (2018) P10005), translated to (theta, phi) coordinates.
+builder:
+  # Momentum variable used in all momentum-dependent cuts (signal cone, strip size, mass-window scaling,
+  # strip mass correction, isolation and outer-strip sums): 'pt' (as in CMS) or 'p'.
+  # Since distances are 3D opening angles, the boost-driven collimation scales with 'p' rather than 'pt' at e+e- colliders.
+  kinematicVariable: pt
+  signalCands:
+    minChargedHadronPt: 0.5
+    minElectronPt: 0.5
+    minMuonPt: 1.0e12
+    minLeadChargedCandPt: 0.5
+  isolationCands:
+    minChargedHadronPt: 0.5
+    minElectronPt: 0.5
+    minGammaPt: 1.0
+    minMuonPt: 0.5
+    minNeutralHadronPt: 10.0
+  matchingConeSize: 1.0e-1
+  # Signal cone R_sig = scale / kinematicVariable(tau), restricted to [min, max]
+  signalCone:
+    scale: 3.0
+    min: 0.05
+    max: 0.10
+  isolationConeSize: 5.0e-1
+  isolation:
+    # Require the momentum sum of e/gamma in strips outside the signal cone to be below this fraction of the tau momentum.
+    # Applied to the final tau and stored in 'tau_passesStripOuterCut' (null disables the cut).
+    maxStripOuterFraction: 0.10
+  # Criteria for choosing among tau candidates of the same jet, in order of priority.
+  # Allowed: numChargedCands (more is better), pt, p (higher is better), numStrips (more is better), isolation (lower is better)
+  candidateRanking: [numChargedCands, pt, numStrips, isolation]
+  StripAlgo:
+    useGammas: true
+    minGammaPtSeed: 1.0
+    minGammaPtAdd: 1.0
+    useElectrons: true
+    minElectronPtSeed: 0.5
+    minElectronPtAdd: 0.5
+    minStripPt: 1.0
+    updateStripAfterEachCand: false
+    maxStripBuildIterations: -1  # -1 = iterate until no more candidates are added
+    # 'dynamic': window size = f(cand) + f(strip), with f(x) = a * x^(-b) restricted to [min, max] (CMS 2018)
+    # 'static': fixed window size (CMS 2012)
+    stripSize: dynamic
+    dynamic:
+      theta: {a: 0.20, b: 0.66, min: 0.05, max: 0.15}
+      phi: {a: 0.35, b: 0.71, min: 0.05, max: 0.30}
+    static:
+      theta: 0.05
+      phi: 0.20
+  # Per decay mode:
+  #   minTauMass < m_tau < maxTauMass                         (fixed window)
+  #   maxTauMassScaling: {refValue, maxLimit}                 upper limit = maxTauMass * sqrt(x / refValue), restricted to [maxTauMass, maxLimit]
+  #   stripMassCorrection: true                               window widened by Delta m from the strip size (CMS 2018, Eq. 5)
+  #   min/maxStripMass                                        window on the visible mass of each strip
+  decayModes:
+    1Prong0Pi0:
+      dm_idx: 0
+      numChargedCands: 1
+      numStrips: 0
+      minTauMass: -1.0e3
+      maxTauMass: 1.0
+      maxChargedCands: 6
+      maxStrips: 0
+    1Prong1Pi0:
+      dm_idx: 1
+      numChargedCands: 1
+      numStrips: 1
+      minTauMass: 0.3
+      maxTauMass: 1.3
+      maxTauMassScaling: {refValue: 100.0, maxLimit: 4.2}
+      stripMassCorrection: true
+      minStripMass: -1.0e3
+      maxStripMass: 1.0e3
+      maxChargedCands: 6
+      maxStrips: 6
+    1Prong2Pi0:
+      dm_idx: 2
+      numChargedCands: 1
+      numStrips: 2
+      minTauMass: 0.4
+      maxTauMass: 1.2
+      maxTauMassScaling: {refValue: 100.0, maxLimit: 4.0}
+      stripMassCorrection: true
+      minStripMass: 0.05
+      maxStripMass: 0.20
+      maxChargedCands: 6
+      maxStrips: 5
+    3Prong0Pi0:
+      dm_idx: 10
+      numChargedCands: 3
+      numStrips: 0
+      minTauMass: 0.8
+      maxTauMass: 1.5
+      maxChargedCands: 6
+      maxStrips: 0
+    3Prong1Pi0:
+      dm_idx: 11
+      numChargedCands: 3
+      numStrips: 1
+      minTauMass: 0.9
+      maxTauMass: 1.6
+      minStripMass: -1.0e3
+      maxStripMass: 1.0e3
+      maxChargedCands: 6
+      maxStrips: 3
