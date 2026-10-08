@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hpys"
+version = "0.1.0"
+description = "Python implementation of the hadrons-plus-strips (HPS) tau reconstruction algorithm"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = ["awkward", "numba", "numpy", "vector", "omegaconf", "tqdm"]
+
+[project.optional-dependencies]
+test = ["pytest"]
+tuning = ["optuna>=4"]
+
+[project.scripts]
+hpys-process = "hpys.process:main"
+
+[tool.setuptools.packages.find]
+include = ["hpys*"]
+
+[tool.setuptools.package-data]
+hpys = ["config/*.yaml"]
