@@ -1,0 +1,29 @@
+# Configuration of the cone-based tau builder of https://github.com/Olmichu22/TausFCCee (modules/tauReco.py,
+# findAllTaus / buildTauFromPion). Defaults are their 'taurecolong_optimal.yaml'.
+builder:
+  # Cone radius sqrt(dtheta^2 + dphi^2) around the cone axis (dRMax)
+  dRMax: 0.4
+  # 'running': the axis is the running sum of the tau (seed pion + constituents accepted so far, the default in
+  # TausFCCee); 'lead': the axis stays on the seed pion
+  coneAxis: running
+  # Minimum momentum of every particle (seeds and constituents) (generalPCut)
+  minP: 0.0
+  # Minimum momentum of charged hadrons (seeds and constituents) (TauPionPCut)
+  minPionP: 0.0
+  # Minimum momentum of photons in the cone (TauPhotonPCut)
+  minPhotonP: 0.35
+  # Neutral hadrons above this momentum are added to the tau and make it a non-hadronic tau (NeutronCut)
+  minNeutralHadronP: 3.0
+  # Two taus whose axes are closer than this are duplicates; the first one (in candidate order) is kept
+  duplicateDR: 0.05
+  # Taus are built from all candidates of the event. Each jet gets the tau closest to its axis (3D opening angle)
+  # if it is within this distance, as the matchingConeSize of HPS
+  matchingConeSize: 0.1
+  # Removal of FSR / shower photons from 1-prong taus (extra_reco_correction 'pion_photon_fsr'), null disables it
+  pionPhotonFSR:
+    pi0Mass: 0.1349768
+    pi0MassWindow: 0.05
+    softFrac: 0.05
+    hardPMin: 2.0
+    massMin: 1.2
+    maxPhotons: 0  # 0 = no limit

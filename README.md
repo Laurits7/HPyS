@@ -35,6 +35,11 @@ the next criterion decides, and among candidates that are equal in all criteria 
   numeric arrays by `build_params`.
 - [`hpys/reference.py`](hpys/reference.py): the original object-oriented implementation (about 50 ms per jet). It is kept
   as the reference: the tests require both implementations to give the same output for every field.
+- [`hpys/cone.py`](hpys/cone.py): for comparison, the cone-based reconstruction of
+  [TausFCCee](https://github.com/Olmichu22/TausFCCee) (`findAllTaus`): a tau is built around every charged hadron of
+  the event from the particles within a cone, and its decay mode follows from the number of charged hadrons and photons.
+  Each jet gets the tau closest to its axis. Configuration: [`hpys/config/cone.yaml`](hpys/config/cone.yaml);
+  `scripts/compare_versions.py` includes it as `Cone`.
 
 ## Usage
 
