@@ -2,7 +2,8 @@
 and median ΔR versus generator-level visible pT):
   - HPS_mltau:   the tau_* branches stored in the input file (ml-tau-model HPS, before the fixes in this repository);
   - HPS_CMS2018: HPyS with the default configuration (CMS 2018 parameters);
-  - HPS_tuned:   HPyS with a tuned configuration.
+  - HPS_tuned:   HPyS with a tuned configuration;
+  - Cone:        the cone-based reconstruction of TausFCCee (hpys.cone), built around each charged hadron.
 Only the held-out part of the file (not used in the optimization) is evaluated.
 
 Needs ml-tau-model on PYTHONPATH (for mltau.tools.evaluation). Usage:
@@ -17,7 +18,7 @@ import awkward as ak
 import numpy as np
 from omegaconf import OmegaConf
 
-from hpys import hps, tuning
+from hpys import cone, hps, tuning
 from mltau.tools import features as f
 from mltau.tools.evaluation import decay_mode as d
 from mltau.tools.evaluation import kinematics as k
@@ -28,6 +29,7 @@ STYLES = {
     "HPS_mltau": {"name": "HPS ml-tau-model (tau_* branches)", "marker": "s", "color": "tab:gray", "ls": "dashed", "lw": 3},
     "HPS_CMS2018": {"name": "HPyS, CMS 2018 parameters", "marker": "o", "color": "tab:orange", "ls": "solid", "lw": 3},
     "HPS_tuned": {"name": "HPyS, tuned parameters", "marker": "^", "color": "tab:blue", "ls": "solid", "lw": 3},
+    "Cone": {"name": "Cone around charged hadron (TausFCCee)", "marker": "D", "color": "tab:green", "ls": "solid", "lw": 3},
     "PerfectCounting": {"name": "Perfect counting of reco particles", "marker": "*", "color": "black", "ls": "dotted", "lw": 2},
 }
 
@@ -43,6 +45,7 @@ def main():
     parser.add_argument("data")
     parser.add_argument("tuned_config")
     parser.add_argument("--default-config", default=tuning.DEFAULT_CONFIG)
+    parser.add_argument("--cone-config", default=cone.DEFAULT_CONFIG, help="Configuration of the TausFCCee cone algorithm")
     parser.add_argument("--split-fraction", type=float, default=0.5)
     parser.add_argument("--oracle", default=None, help="Decay modes from scripts/oracle.py (oracle_dm.npy), shown in the F1 plot")
     parser.add_argument("-o", "--output-dir", default="comparison")
@@ -53,6 +56,7 @@ def main():
     taus = {"HPS_mltau": {"tau_decaymode": data["tau_decaymode"], "tau_p4s": data["tau_p4s"]}}
     for name, path in [("HPS_CMS2018", args.default_config), ("HPS_tuned", args.tuned_config)]:
         taus[name] = hps.HPSTauBuilder(OmegaConf.load(path)).process_jets(data)
+    taus["Cone"] = cone.ConeTauBuilder(OmegaConf.load(args.cone_config)).process_jets(data)
 
     cfg = load_cfg()
     sample = "z"
